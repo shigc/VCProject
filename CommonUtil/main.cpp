@@ -3,19 +3,33 @@
 
 #include "stdafx.h"
 #include "CmdUtil.h"
+#include "NetUtil.h"
+#include "EnumDevices.h"
+#include <algorithm>
 
 using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	CString strCmd = _T("C:\\Users\\Public\\Documents\\test.bat  \"FFFFFF\" \"COM1\"");
+	CArray<DeviceInfo, DeviceInfo&> adi;
+	EnumDevices::EnumAllDevices(adi);
 
-	CString output;
-	CmdUtil::Execute(strCmd, output);
+	int size = adi.GetSize();
+	sort(adi.GetData(), adi.GetData() + size);
 
-	TCHAR *chs= output.GetBuffer();
+	int i;
 
-	cout << chs << endl;
+	CString lastName;
+	for (i = 0; i < size; i++)
+	{
+		if(adi.GetAt(i).strClassName != lastName)
+		{
+			lastName = adi.GetAt(i).strClassName;
+			printf("%s:\n",adi.GetAt(i).strClassDesc.GetBuffer(0));
+		}
+		//printf("CLASSNAME:%s\n" , adi.GetAt(i).strClassDesc.GetBuffer(0));
+		printf("\t%s\n", adi.GetAt(i).strName.GetBuffer(0));
+	}
 	
 	return 0;
 }
